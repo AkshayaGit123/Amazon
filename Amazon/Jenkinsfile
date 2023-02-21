@@ -1,0 +1,37 @@
+pipeline {
+	agent any
+	stages {
+	    stage ('clean up') {
+	        steps {
+	            cleanWs()
+	        }
+	    }
+	    stage ('clone') {
+			steps {
+				sh 'git clone https://github.com/AkshayaGit123/Amazon'
+			}
+		}
+		stage ('build') {
+			steps {
+			    dir ('Amazon/Amazon'){
+				    sh 'mvn clean install'
+			    }
+			}
+		
+		}
+		stage ('test') {
+			steps {
+			    dir ('Amazon/Amazon'){
+				    archiveArtifacts artifacts: 'Amazon-Web/target/*.war', followSymlinks: false
+			    }
+			}
+		}
+		 stage ('run') {
+            steps {
+                dir ('Amazon/Amazon/Amazon-Web') {
+                    sh 'cp target/*.war /opt/tomcat/webapps'
+                }
+            }
+        }
+	}
+}			}
